@@ -1,0 +1,4 @@
+/release-assets/
+/.tools/
+/.release-local.json
+*.log
