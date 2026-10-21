@@ -27,7 +27,7 @@
 
 ## 维护发布
 
-推荐在源码仓库执行 `release.cmd` 或 `npm run release`，由 GitHub Actions 构建主程序、插件和共享引擎，更新本仓库并上传 Release 草稿。维护者检查后发布。一次性配置见源码仓库的“仓库与发布.md”。
+将代码推送到源码仓库的 main 后，GitHub Actions 自动构建主程序、插件和共享引擎，核对上传附件的 SHA-256，再公开发布 Release 并设为最新版。已发布的版本自动跳过，发布新版前需提升版本号。无需手动运行工作流或发布草稿。一次性配置见源码仓库的“仓库与发布.md”。
 
 在源码项目运行 `npm run prepare-release`，更新本仓库元数据和本地附件。附件位于 `release-assets/版本号`，此目录不提交到 Git。
 
