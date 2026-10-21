@@ -21,7 +21,7 @@
 | 录屏 | record.qxp | media.qxe、audio.qxe |
 | 转换 | convert.qxp | convert.qxe |
 
-主程序只包含基础框架，功能按需安装；当前尚不提供在线自动安装。下载和录屏共享媒体引擎，不必重复安装。
+主程序只包含基础框架，功能按需安装。点击右上角拼图 → 在线下载，可安装本仓库最新公开 Release 的官方插件，并自动补齐缺少的引擎；也支持本地包安装。下载和录屏共享媒体引擎，不必重复安装。
 
 对应源码为 `qingxia-source.zip`，许可文本为 `licenses.zip`；各插件也保留所需许可。文件校验见 `SHA256SUMS.txt`，`catalog.json` 为签名发布清单。
 
