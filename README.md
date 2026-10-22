@@ -17,7 +17,7 @@
 | 互传 | transfer.qxp | 无 |
 | 热榜 | hot.qxp | 无；内容需要联网 |
 | 预览 | preview.qxp | 资源已包含在插件中 |
-| 下载 | video.qxp | media.qxe |
+| 下载 | video.qxp | download.qxe（视频解析另需 media.qxe） |
 | 录屏 | record.qxp | media.qxe、audio.qxe |
 | 转换 | convert.qxp | convert.qxe |
 
