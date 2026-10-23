@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {pruneReleases} from './release-retention.mjs';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const repository='MrJelly/Qube_Releases';
 function exec(command,args,options={}){
@@ -70,10 +71,19 @@ try{
   exec(gh,['release','create',release.tag,'--repo',repository,'--target','main','--draft','--title','轻匣 '+release.tag,'--notes-file',path.join(root,'release-notes.md')],{stdio:'inherit'});
  }
  exec(gh,['release','upload',release.tag,...release.files,'--repo',repository,'--clobber'],{stdio:'inherit'});
- const uploaded=JSON.parse(exec(gh,['release','view',release.tag,'--repo',repository,'--json','isDraft,url,assets']));
+ const uploaded=JSON.parse(exec(gh,['release','view',release.tag,'--repo',repository,'--json','databaseId,isDraft,url,assets']));
  if(!uploaded.isDraft)throw Error('Unexpected published state');
  for(const file of release.files){const asset=uploaded.assets.find(a=>a.name===path.basename(file));if(!asset||asset.size!==fs.statSync(file).size)throw Error('Uploaded attachment missing or wrong size: '+path.basename(file));}
- console.log('Draft is ready. Review it in GitHub and click Publish release.');
+ if(process.argv.includes('--publish')){
+  const assets=JSON.parse(exec(gh,['api',`repos/${repository}/releases/${uploaded.databaseId}/assets?per_page=100`,'--paginate','--slurp'])).flat();
+  if(assets.length!==release.files.length)throw Error('Unexpected attachments in release draft. Publication stopped.');
+  for(const file of release.files){const asset=assets.find(a=>a.name===path.basename(file));const digest='sha256:'+crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');if(!asset||asset.size!==fs.statSync(file).size||asset.digest!==digest)throw Error('Uploaded attachment checksum differs: '+path.basename(file));}
+  exec(gh,['release','edit',release.tag,'--repo',repository,'--draft=false','--latest'],{stdio:'inherit'});
+  const published=JSON.parse(exec(gh,['release','view',release.tag,'--repo',repository,'--json','isDraft']));
+  if(published.isDraft)throw Error('Release is still a draft.');
+  console.log('Release published.');
+  pruneReleases(gh,root,release.tag);
+ }else console.log('Draft is ready. Review it in GitHub and click Publish release.');
  console.log(uploaded.url);
  if(!process.argv.includes('--ci'))exec(gh,['release','view',release.tag,'--repo',repository,'--web'],{stdio:'inherit'});
 }catch(error){console.error(error.message);process.exitCode=1;}
